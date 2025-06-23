@@ -1,0 +1,100 @@
+<ul id="main-tabs" class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="/course/view.php?id=41&amp;section=0" title="Bússola">Abertura</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/course/view.php?id=41&amp;section=1" title="Avisos">Comunicados</a>
+    </li>
+    <li class="nav-item" style="">
+        <a class="nav-link" href="/course/view.php?id=41&amp;section=4" title="Conteúdo">Conteúdo Programático</a>
+    </li>
+    <!--
+    <li class="nav-item">
+        <a class="nav-link" href="/course/view.php?id=41&amp;section=2">Biblioteca</a>        
+    </li>
+-->
+    <li class="nav-item">
+        <a class="nav-link" href="/course/view.php?id=41&amp;section=2" title="Documentos">Autogestão</a>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-darkk" data-toggle="dropdown" href="#" role="button" aria-expanded="false" style="text-decoration:none;" title="Documentos">Autogestão</a>
+        <div class="dropdown-menu" style="will-change: transform;">
+            <a class="dropdown-item" href="#"><i class="fa fa-calendar fa-fw"></i> Cronograma</a>
+            <a class="dropdown-item" href="#"><i class="fa fa-address-book-o fa-fw"></i> Orientações Iniciais</a>
+            <a class="dropdown-item" href="/grade/report/grader/index.php?id=41"><i class="fa fa-table fa-fw"></i> Relatório de Notas</a>
+            <a class="dropdown-item" href="/user/index.php?id=41"><i class="fa fa-users fa-fw"></i> Participantes</a>
+            <a class="dropdown-item" href="#"><i class="fa fa-book fa-fw"></i> Glossário</a>
+            <a class="dropdown-item" href="#"><i class="fa fa-thumbs-up fa-fw"></i> Créditos e Direitos Autorais</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/static/faleConosco.html"><i class="fa fa-life-ring fa-fw"></i> Fale Conosco</a>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabledd" href="/course/view.php?id=41&amp;section=3" title="Certificado">Conclusão</a>
+    </li>
+</ul>
+<!--navegação-modulos-->
+<ul id="nav-modules" class="nav nav-tabs" style="display:none; position: relative; left: 0; top: 6px; width: 100%; margin: 4px auto; flex-wrap: wrap; padding-left: 0; list-style: none;">
+    <li class="nav-item" style=""><a class="nav-link" href="/course/view.php?id=41&amp;section=6">Módulo 01</a></li>
+    <li class="nav-item" style=""><a class="nav-link" href="/course/view.php?id=41&amp;section=8">Módulo 02</a></li>
+    <li class="nav-item" style=""><a class="nav-link" href="/course/view.php?id=41&amp;section=10">Módulo 03</a></li>
+    <li class="nav-item" style=""><a class="nav-link" href="/course/view.php?id=41&amp;section=12">Módulo 04</a></li>
+</ul>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const getSection = url => (url.match(/section=(\d+)/) || [])[1];
+        const currentSection = getSection(window.location.href);
+
+        const mainMenu = document.getElementById("main-tabs");
+        const modulesMenu = document.getElementById("nav-modules");
+
+        if (!mainMenu) return; // Se não existir o menu principal, para tudo.
+
+        const mainLinks = [...mainMenu.querySelectorAll(".nav-link:not(.dropdown-toggle)")];
+        const moduleLinks = modulesMenu ? [...modulesMenu.querySelectorAll(".nav-link:not(.dropdown-toggle)")] : [];
+
+        const clearActive = links => links.forEach(l => l.classList.remove("active"));
+        const activate = link => link?.classList.add("active");
+
+        if (moduleLinks.length > 0) {
+            // Se o segundo menu existir, ativa conforme a lógica combinada
+            const moduleActive = moduleLinks.find(link => getSection(link.href) === currentSection);
+            if (moduleActive) {
+                clearActive(moduleLinks);
+                activate(moduleActive);
+
+                mainLinks.forEach(link => {
+                    link.classList.toggle("active", getSection(link.href) === "4");
+                });
+            } else {
+                const mainActive = mainLinks.find(link => getSection(link.href) === currentSection) || mainLinks[0];
+                clearActive(mainLinks);
+                activate(mainActive);
+            }
+        } else {
+            // Se não existir o segundo menu, só trabalha com o primeiro normalmente
+            const mainActive = mainLinks.find(link => getSection(link.href) === currentSection) || mainLinks[0];
+            clearActive(mainLinks);
+            activate(mainActive);
+        }
+
+        const onClick = (linksToClear, activateSpecialMain = false) => e => {
+            const link = e.target.closest(".nav-link");
+            if (!link || link.classList.contains("disabled") || link.classList.contains("disabledd")) return;
+
+            clearActive(linksToClear);
+            activate(link);
+
+            if (activateSpecialMain && modulesMenu) {
+                mainLinks.forEach(l => l.classList.toggle("active", getSection(l.href) === "4"));
+            }
+        };
+
+        mainMenu.addEventListener("click", onClick(mainLinks, false));
+        if (modulesMenu) {
+            modulesMenu.addEventListener("click", onClick(moduleLinks, true));
+        }
+    });
+</script>
