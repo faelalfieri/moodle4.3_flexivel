@@ -1,0 +1,45 @@
+<script>
+    const earlyStyle = document.createElement("style");
+    earlyStyle.textContent = `    		
+        li#section-, li#section-0, li#section-1, li#section-2, li#section-3, li#section-4 , li#section-5  { border: none; padding:0}
+        a#collapsesections, div.course-content > div.header.backto { display: none; }
+        li#section-0 { margin-top: -30px; }
+        div.course-content{margin-top: -40px}
+        `;
+    document.head.appendChild(earlyStyle);
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const navModules = document.querySelector("ul#nav-modules");
+        const progress = document.querySelector("#block-region-content-bottom");
+
+        if (navModules) {
+            const toggleNavModules = () => {
+                const params = new URLSearchParams(window.location.search);
+                const sectionValue = params.get("section");
+                const section = sectionValue ? parseInt(sectionValue) : 0;
+                const shouldShow = !isNaN(section) && section > 5;
+
+                // Usa classes Bootstrap para mostrar/ocultar
+                navModules.classList.remove("d-none", "d-flex");
+                navModules.classList.add(shouldShow ? "d-flex" : "d-none");
+            };
+
+            toggleNavModules(); // Executa ao carregar a página
+            window.addEventListener("hashchange", toggleNavModules); // Reage a mudanças no hash
+            window.addEventListener("popstate", toggleNavModules); // Reage a mudanças no histórico
+        }
+
+        function activeProgress() {
+            const url = new URL(window.location.href);
+            const isSection2 =
+                url.searchParams.get("section") === "2" ||
+                url.hash.includes("section=2");
+
+            progress.classList.toggle("d-none", !isSection2);
+        }
+        activeProgress();
+
+    });
+</script>
